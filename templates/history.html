@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}History — Vivah Samiti Scraper{% endblock %}
+
+{% block content %}
+<section class="card">
+  <h2>Export History</h2>
+  <p>Baseline for comparison: <strong>{{ config.baseline_file or 'latest full_*.xlsx' }}</strong></p>
+
+  {% if exports %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>File</th>
+          <th>Type</th>
+          <th>Total</th>
+          <th>New</th>
+          <th>Pages</th>
+          <th>Modified</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in exports %}
+        <tr>
+          <td>{{ item.filename }}</td>
+          <td>{{ item.type }}</td>
+          <td>{{ item.total_scraped or '-' }}</td>
+          <td>{{ item.new_count or '-' }}</td>
+          <td>{{ item.pages_fetched or '-' }}</td>
+          <td>{{ item.modified }}</td>
+          <td class="actions-cell">
+            <a class="btn btn-small" href="{{ url_for('api_download_export', filename=item.filename) }}">Download</a>
+            {% if item.type == 'full' %}
+            <button class="btn btn-small btn-secondary set-baseline-btn" data-file="{{ item.filename }}">Set Baseline</button>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="empty-state">No exports yet. Run a scrape from the Dashboard.</p>
+  {% endif %}
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  initHistory();
+</script>
+{% endblock %}

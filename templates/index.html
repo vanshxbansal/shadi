@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard — Vivah Samiti Scraper{% endblock %}
+
+{% block content %}
+<section class="card">
+  <h2>Run Scrape</h2>
+  <p>Logs in, detects total pages, downloads all biodata in parallel, compares with the previous export, and creates a new-only Excel file.</p>
+  <button id="run-scrape-btn" class="btn btn-primary">Run Scrape</button>
+</section>
+
+<section id="progress-section" class="card hidden">
+  <h2>Progress</h2>
+  <div class="progress-bar-wrap">
+    <div id="progress-bar" class="progress-bar" style="width: 0%"></div>
+  </div>
+  <p id="progress-message" class="status-text">Starting...</p>
+  <div id="log-panel" class="log-panel"></div>
+</section>
+
+<section id="results-section" class="card hidden">
+  <h2>Results</h2>
+  <div class="stats-grid">
+    <div class="stat-card">
+      <span class="stat-label">Total scraped</span>
+      <span id="stat-total" class="stat-value">0</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Baseline count</span>
+      <span id="stat-baseline" class="stat-value">0</span>
+    </div>
+    <div class="stat-card highlight">
+      <span class="stat-label">New profiles</span>
+      <span id="stat-new" class="stat-value">0</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Pages fetched</span>
+      <span id="stat-pages" class="stat-value">0</span>
+    </div>
+  </div>
+
+  <div class="actions">
+    <a id="download-new" class="btn btn-primary" href="#">Download New Only Excel</a>
+    <a id="download-full" class="btn btn-secondary" href="#">Download Full Excel</a>
+  </div>
+
+  <h3>New Profiles Preview</h3>
+  <div class="table-wrap">
+    <table id="preview-table">
+      <thead>
+        <tr>
+          <th>Registration No.</th>
+          <th>Name</th>
+          <th>Gender</th>
+          <th>Date of Birth</th>
+          <th>Phone</th>
+          <th>Location</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  initDashboard();
+</script>
+{% endblock %}
