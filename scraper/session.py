@@ -1,4 +1,5 @@
 import json
+import os
 from typing import Optional
 
 import requests
@@ -7,14 +8,16 @@ import config
 
 
 def load_config() -> dict:
-    if not config.CONFIG_FILE.exists():
-        return {"mobile": "", "phpsessid": "", "baseline_file": ""}
-    with open(config.CONFIG_FILE, encoding="utf-8") as f:
-        data = json.load(f)
+    if config.CONFIG_FILE.exists():
+        with open(config.CONFIG_FILE, encoding="utf-8") as f:
+            data = json.load(f)
+    else:
+        data = {}
+
     return {
-        "mobile": data.get("mobile", ""),
-        "phpsessid": data.get("phpsessid", ""),
-        "baseline_file": data.get("baseline_file", ""),
+        "mobile": (data.get("mobile") or os.environ.get("MOBILE", "")).strip(),
+        "phpsessid": (data.get("phpsessid") or os.environ.get("PHPSESSID", "")).strip(),
+        "baseline_file": (data.get("baseline_file") or os.environ.get("BASELINE_FILE", "")).strip(),
     }
 
 

@@ -1,4 +1,5 @@
 import json
+import os
 from pathlib import Path
 
 from flask import Flask, jsonify, render_template, request, send_from_directory
@@ -13,6 +14,31 @@ from services.jobs import job_manager
 
 app = Flask(__name__)
 config.ensure_dirs()
+
+
+def _seed_config_from_env():
+    """Persist env credentials to disk so they survive within a running instance."""
+    mobile = os.environ.get("MOBILE", "").strip()
+    phpsessid = os.environ.get("PHPSESSID", "").strip()
+    if not mobile and not phpsessid:
+        return
+
+    if config.CONFIG_FILE.exists():
+        with open(config.CONFIG_FILE, encoding="utf-8") as f:
+            data = json.load(f)
+    else:
+        data = {}
+
+    updates = {}
+    if mobile and not (data.get("mobile") or "").strip():
+        updates["mobile"] = mobile
+    if phpsessid and not (data.get("phpsessid") or "").strip():
+        updates["phpsessid"] = phpsessid
+    if updates:
+        save_config(**updates)
+
+
+_seed_config_from_env()
 
 
 @app.route("/")

@@ -14,6 +14,16 @@ function initDashboard() {
   const runBtn = document.getElementById("run-scrape-btn");
   if (!runBtn) return;
 
+  api("/api/settings")
+    .then((cfg) => {
+      if (!cfg.mobile && !cfg.phpsessid) {
+        document.getElementById("progress-section").classList.remove("hidden");
+        document.getElementById("progress-message").textContent =
+          "No login saved on the server. Open Settings, enter your mobile number, and click Save Settings.";
+      }
+    })
+    .catch(() => {});
+
   runBtn.addEventListener("click", async () => {
     runBtn.disabled = true;
     document.getElementById("progress-section").classList.remove("hidden");
@@ -23,6 +33,10 @@ function initDashboard() {
     document.getElementById("progress-message").textContent = "Starting scrape...";
 
     try {
+      const cfg = await api("/api/settings");
+      if (!cfg.mobile && !cfg.phpsessid) {
+        throw new Error("Set mobile number or PHPSESSID in Settings first, then click Save Settings.");
+      }
       const { job_id } = await api("/api/scrape", { method: "POST" });
       pollJob(job_id);
     } catch (err) {
